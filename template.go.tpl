@@ -1,39 +1,47 @@
-type {{.ServiceType}}HTTPServer interface {
-{{range .MethodSets}}
+type {{ $.InterfaceName }} interface {
+{{range .MethodSet}}
 	{{.Name}}(context.Context, *{{.Request}}) (*{{.Reply}}, error)
 {{end}}
 }
-func Register{{.ServiceType}}HTTPServer(r gin.IRouter, srv {{.ServiceType}}HTTPServer) {
-	s := {{.ServiceType}}{
+func Register{{ $.InterfaceName }}(r gin.IRouter, srv {{ $.InterfaceName }}) {
+	s := {{.Name}}{
 		server: srv,
 		router:     r,
+		resp: default{{$.Name}}Resp{},
 	}
 	s.RegisterService()
 }
 
-type {{$.ServiceType}} struct{
-	server {{$.ServiceType}}HTTPServer
+type {{$.Name}} struct{
+	server {{ $.InterfaceName }}
 	router gin.IRouter
+	resp  interface {
+		Error(ctx *gin.Context, err error)
+		ParamsError (ctx *gin.Context, err error)
+		Success(ctx *gin.Context, data interface{})
+	}
 }
 
 // Resp 返回值
-type {{$.ServiceType}}Resp struct {
-	Code int          `json:"code"`
-	Msg  string       `json:"msg"`
-	Data interface{}  `json:"data"`
+type default{{$.Name}}Resp struct {}
+
+func (resp default{{$.Name}}Resp) response(ctx *gin.Context, status, code int, msg string, data interface{}) {
+	ctx.JSON(status, map[string]interface{}{
+		"code": code, 
+		"msg": msg,
+		"data": data,
+	})
 }
 
-// errResp errResp
-func (s *{{$.ServiceType}}) errResp(ctx *gin.Context, err error) {
-	resp := {{$.ServiceType}}Resp{
-		Code: -1,
-		Msg:  "未知错误",
-	}
+// Error 返回错误信息
+func (resp default{{$.Name}}Resp) Error(ctx *gin.Context, err error) {
+	code := -1
 	status := 500
+	msg := "未知错误"
 	
 	if err == nil {
-		resp.Msg += ", err is nil"
-		ctx.JSON(status, resp)
+		msg += ", err is nil"
+		resp.response(ctx, status, code, msg, nil)
 		return
 	}
 
@@ -46,49 +54,49 @@ func (s *{{$.ServiceType}}) errResp(ctx *gin.Context, err error) {
 	var c iCode
 	if errors.As(err, &c) {
 		status = c.HTTPCode()
-		resp.Code = c.Code()
-		resp.Msg = c.Message()
+		code = c.Code()
+		msg = c.Message()
 	}
 
 	_ = ctx.Error(err)
 
-	ctx.JSON(status, resp)
+	resp.response(ctx, status, code, msg, nil)
 }
 
-func (s *{{$.ServiceType}}) paramsErrResp(ctx *gin.Context, err error){
-	resp := {{$.ServiceType}}Resp{
-		Code: 400,
-		Msg:  "参数错误",
-	}
-	status := 400
+// ParamsError 参数错误
+func (resp default{{$.Name}}Resp) ParamsError (ctx *gin.Context, err error) {
 	_ = ctx.Error(err)
-	ctx.JSON(status, resp)
+	resp.response(ctx, 400, 400, "参数错误", nil)
 }
 
+// Success 返回成功信息
+func (resp default{{$.Name}}Resp) Success(ctx *gin.Context, data interface{}) {
+	resp.response(ctx, 200, 0, "成功", data)
+}
 
 
 {{range .Methods}}
-func (s *{{$.ServiceType}}) {{.Name}}_{{.Num}} (ctx *gin.Context) {
+func (s *{{$.Name}}) {{ .HandlerName }} (ctx *gin.Context) {
 	var in {{.Request}}
-{{if ne (len .Vars) 0}}
+{{if .HasPathParams }}
 	if err := ctx.ShouldBindUri(&in); err != nil {
-		s.paramsErrResp(ctx, err)
+		s.resp.ParamsError(ctx, err)
 		return
 	}
 {{end}}
 {{if eq .Method "GET" "DELETE" }}
 	if err := ctx.ShouldBindQuery(&in); err != nil {
-		s.paramsErrResp(ctx, err)
+		s.resp.ParamsError(ctx, err)
 		return
 	}
 {{else if eq .Method "POST" "PUT" }}
 	if err := ctx.ShouldBindJSON(&in); err != nil {
-		s.paramsErrResp(ctx, err)
+		s.resp.ParamsError(ctx, err)
 		return
 	}
 {{else}}
 	if err := ctx.ShouldBind(&in); err != nil {
-		s.paramsErrResp(ctx, err)
+		s.resp.ParamsError(ctx, err)
 		return
 	}
 {{end}}
@@ -97,22 +105,18 @@ func (s *{{$.ServiceType}}) {{.Name}}_{{.Num}} (ctx *gin.Context) {
 		md.Set(k, v...)
 	}
 	newCtx := metadata.NewIncomingContext(ctx, md)
-	out, err := s.server.({{$.ServiceType}}HTTPServer).{{.Name}}(newCtx, &in)
+	out, err := s.server.({{ $.InterfaceName }}).{{.Name}}(newCtx, &in)
 	if err != nil {
-		s.errResp(ctx, err)
+		s.resp.Error(ctx, err)
 		return
 	}
-	ctx.JSON(200, {{$.ServiceType}}Resp{
-		Code: 0,
-		Msg:  "成功",
-		Data: out,
-	})
-	return
+
+	s.resp.Success(ctx, out)
 }
 {{end}}
 
-func (s *{{$.ServiceType}}) RegisterService() {
+func (s *{{$.Name}}) RegisterService() {
 {{range .Methods}}
-		s.router.Handle("{{.Method}}", "{{.Path}}", s.{{.Name}}_{{.Num}})
+		s.router.Handle("{{.Method}}", "{{.Path}}", s.{{ .HandlerName }})
 {{end}}
 }

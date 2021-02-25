@@ -6,3 +6,4 @@ gen_example:
 	--go_out ./example --go_opt=paths=source_relative \
 	--go-gin_out ./example --go-gin_opt=paths=source_relative \
 	example/testproto/*.proto
+	protoc-go-inject-tag -input=./example/testproto/test.pb.go

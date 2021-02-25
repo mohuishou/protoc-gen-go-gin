@@ -11,49 +11,14 @@
     "application/json"
   ],
   "paths": {
-    "/v1/example/echo/{id}": {
-      "post": {
-        "summary": "Echo method receives a simple message and returns it.",
-        "description": "The message posted as the id parameter will also be\nreturned.",
-        "operationId": "EchoService_Echo",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/testprotoSimpleMessage"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/rpcStatus"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "id",
-            "description": "Id represents the message identifier.",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "tags": [
-          "EchoService"
-        ]
-      }
-    },
-    "/v1/example/echo/{id}/{num}": {
+    "/v1/articles": {
       "get": {
-        "summary": "Echo method receives a simple message and returns it.",
-        "description": "The message posted as the id parameter will also be\nreturned.",
-        "operationId": "EchoService_Echo2",
+        "operationId": "BlogService_GetArticles",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/testprotoSimpleMessage"
+              "$ref": "#/definitions/testprotoGetArticlesResp"
             }
           },
           "default": {
@@ -65,96 +30,103 @@
         },
         "parameters": [
           {
-            "name": "id",
-            "description": "Id represents the message identifier.",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "num",
-            "in": "path",
-            "required": true,
-            "type": "string",
-            "format": "int64"
-          },
-          {
-            "name": "line_num",
-            "in": "query",
-            "required": false,
-            "type": "string",
-            "format": "int64"
-          },
-          {
-            "name": "lang",
+            "name": "title",
+            "description": "@inject_tag: form:\"title\".",
             "in": "query",
             "required": false,
             "type": "string"
           },
           {
-            "name": "status.progress",
+            "name": "page",
+            "description": "@inject_tag: form:\"page\".",
             "in": "query",
             "required": false,
-            "type": "string",
-            "format": "int64"
+            "type": "integer",
+            "format": "int32"
           },
           {
-            "name": "status.note",
+            "name": "page_size",
+            "description": "@inject_tag: form:\"page_size\".",
             "in": "query",
             "required": false,
-            "type": "string"
+            "type": "integer",
+            "format": "int32"
           },
           {
-            "name": "en",
+            "name": "author_id",
+            "description": "@inject_tag: form:\"author_id\" uri:\"author_id\".",
             "in": "query",
             "required": false,
-            "type": "string",
-            "format": "int64"
-          },
-          {
-            "name": "no.progress",
-            "in": "query",
-            "required": false,
-            "type": "string",
-            "format": "int64"
-          },
-          {
-            "name": "no.note",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "corpus",
-            "in": "query",
-            "required": false,
-            "type": "string",
-            "enum": [
-              "UNIVERSAL",
-              "WEB",
-              "IMAGES",
-              "LOCAL",
-              "NEWS",
-              "PRODUCTS",
-              "VIDEO"
-            ],
-            "default": "UNIVERSAL"
+            "type": "integer",
+            "format": "int32"
           }
         ],
         "tags": [
-          "EchoService"
+          "BlogService"
         ]
       }
     },
-    "/v1/example/echo_body": {
+    "/v1/author/{author_id}/articles": {
+      "get": {
+        "operationId": "BlogService_GetArticles2",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/testprotoGetArticlesResp"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "author_id",
+            "description": "@inject_tag: form:\"author_id\" uri:\"author_id\"",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "title",
+            "description": "@inject_tag: form:\"title\".",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "page",
+            "description": "@inject_tag: form:\"page\".",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "page_size",
+            "description": "@inject_tag: form:\"page_size\".",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "BlogService"
+        ]
+      },
       "post": {
-        "summary": "EchoBody method receives a simple message and returns it.",
-        "operationId": "EchoService_EchoBody",
+        "operationId": "BlogService_CreateArticle",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/testprotoSimpleMessage"
+              "$ref": "#/definitions/testprotoEmpty"
             }
           },
           "default": {
@@ -166,160 +138,16 @@
         },
         "parameters": [
           {
-            "name": "body",
-            "in": "body",
+            "name": "author_id",
+            "description": "@inject_tag: form:\"author_id\" uri:\"author_id\"",
+            "in": "path",
             "required": true,
-            "schema": {
-              "$ref": "#/definitions/testprotoSimpleMessage"
-            }
+            "type": "integer",
+            "format": "int32"
           }
         ],
         "tags": [
-          "EchoService"
-        ]
-      }
-    },
-    "/v1/example/echo_delete": {
-      "delete": {
-        "summary": "EchoDelete method receives a simple message and returns it.",
-        "operationId": "EchoService_EchoDelete",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/testprotoSimpleMessage"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/rpcStatus"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "id",
-            "description": "Id represents the message identifier.",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "num",
-            "in": "query",
-            "required": false,
-            "type": "string",
-            "format": "int64"
-          },
-          {
-            "name": "line_num",
-            "in": "query",
-            "required": false,
-            "type": "string",
-            "format": "int64"
-          },
-          {
-            "name": "lang",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "status.progress",
-            "in": "query",
-            "required": false,
-            "type": "string",
-            "format": "int64"
-          },
-          {
-            "name": "status.note",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "en",
-            "in": "query",
-            "required": false,
-            "type": "string",
-            "format": "int64"
-          },
-          {
-            "name": "no.progress",
-            "in": "query",
-            "required": false,
-            "type": "string",
-            "format": "int64"
-          },
-          {
-            "name": "no.note",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "corpus",
-            "in": "query",
-            "required": false,
-            "type": "string",
-            "enum": [
-              "UNIVERSAL",
-              "WEB",
-              "IMAGES",
-              "LOCAL",
-              "NEWS",
-              "PRODUCTS",
-              "VIDEO"
-            ],
-            "default": "UNIVERSAL"
-          }
-        ],
-        "tags": [
-          "EchoService"
-        ]
-      }
-    },
-    "/v1/example/echo_patch": {
-      "patch": {
-        "summary": "EchoPatch method receives a NonStandardUpdateRequest and returns it.",
-        "operationId": "EchoService_EchoPatch",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/testprotoDynamicMessageUpdate"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/rpcStatus"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/testprotoDynamicMessage"
-            }
-          },
-          {
-            "name": "update_mask",
-            "in": "query",
-            "required": false,
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "collectionFormat": "multi"
-          }
-        ],
-        "tags": [
-          "EchoService"
+          "BlogService"
         ]
       }
     }
@@ -336,14 +164,6 @@
           "format": "byte"
         }
       }
-    },
-    "protobufNullValue": {
-      "type": "string",
-      "enum": [
-        "NULL_VALUE"
-      ],
-      "default": "NULL_VALUE",
-      "description": "`NullValue` is a singleton enumeration to represent the null value for the\n`Value` type union.\n\n The JSON representation for `NullValue` is JSON `null`.\n\n - NULL_VALUE: Null value."
     },
     "rpcStatus": {
       "type": "object",
@@ -363,91 +183,39 @@
         }
       }
     },
-    "testprotoCorpus": {
-      "type": "string",
-      "enum": [
-        "UNIVERSAL",
-        "WEB",
-        "IMAGES",
-        "LOCAL",
-        "NEWS",
-        "PRODUCTS",
-        "VIDEO"
-      ],
-      "default": "UNIVERSAL"
-    },
-    "testprotoDynamicMessage": {
+    "testprotoArticle": {
       "type": "object",
       "properties": {
-        "struct_field": {
-          "type": "object"
+        "title": {
+          "type": "string"
         },
-        "value_field": {
-          "type": "object"
-        }
-      },
-      "description": "DynamicMessage represents a message which can have its structure\nbuilt dynamically using Struct and Values."
-    },
-    "testprotoDynamicMessageUpdate": {
-      "type": "object",
-      "properties": {
-        "body": {
-          "$ref": "#/definitions/testprotoDynamicMessage"
+        "content": {
+          "type": "string"
         },
-        "update_mask": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
+        "author_id": {
+          "type": "integer",
+          "format": "int32",
+          "title": "@inject_tag: form:\"author_id\" uri:\"author_id\""
         }
       }
     },
-    "testprotoEmbedded": {
-      "type": "object",
-      "properties": {
-        "progress": {
-          "type": "string",
-          "format": "int64"
-        },
-        "note": {
-          "type": "string"
-        }
-      },
-      "description": "Embedded represents a message embedded in SimpleMessage."
+    "testprotoEmpty": {
+      "type": "object"
     },
-    "testprotoSimpleMessage": {
+    "testprotoGetArticlesResp": {
       "type": "object",
       "properties": {
-        "id": {
-          "type": "string",
-          "description": "Id represents the message identifier."
-        },
-        "num": {
+        "total": {
           "type": "string",
           "format": "int64"
         },
-        "line_num": {
-          "type": "string",
-          "format": "int64"
-        },
-        "lang": {
-          "type": "string"
-        },
-        "status": {
-          "$ref": "#/definitions/testprotoEmbedded"
-        },
-        "en": {
-          "type": "string",
-          "format": "int64"
-        },
-        "no": {
-          "$ref": "#/definitions/testprotoEmbedded"
-        },
-        "corpus": {
-          "$ref": "#/definitions/testprotoCorpus"
+        "articles": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/testprotoArticle"
+          }
         }
-      },
-      "description": "SimpleMessage represents a simple message sent to the Echo service."
+      }
     }
   }
 }

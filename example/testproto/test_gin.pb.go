@@ -14,27 +14,23 @@ import (
 // context.metadata.
 //gin.errors.
 
-type EchoServiceHTTPServer interface {
-	Echo(context.Context, *SimpleMessage) (*SimpleMessage, error)
+type BlogServiceHTTPServer interface {
+	CreateArticle(context.Context, *Article) (*Empty, error)
 
-	EchoBody(context.Context, *SimpleMessage) (*SimpleMessage, error)
-
-	EchoDelete(context.Context, *SimpleMessage) (*SimpleMessage, error)
-
-	EchoPatch(context.Context, *DynamicMessageUpdate) (*DynamicMessageUpdate, error)
+	GetArticles(context.Context, *GetArticlesReq) (*GetArticlesResp, error)
 }
 
-func RegisterEchoServiceHTTPServer(r gin.IRouter, srv EchoServiceHTTPServer) {
-	s := EchoService{
+func RegisterBlogServiceHTTPServer(r gin.IRouter, srv BlogServiceHTTPServer) {
+	s := BlogService{
 		server: srv,
 		router: r,
-		resp:   defaultEchoServiceResp{},
+		resp:   defaultBlogServiceResp{},
 	}
 	s.RegisterService()
 }
 
-type EchoService struct {
-	server EchoServiceHTTPServer
+type BlogService struct {
+	server BlogServiceHTTPServer
 	router gin.IRouter
 	resp   interface {
 		Error(ctx *gin.Context, err error)
@@ -44,9 +40,9 @@ type EchoService struct {
 }
 
 // Resp 返回值
-type defaultEchoServiceResp struct{}
+type defaultBlogServiceResp struct{}
 
-func (resp defaultEchoServiceResp) response(ctx *gin.Context, status, code int, msg string, data interface{}) {
+func (resp defaultBlogServiceResp) response(ctx *gin.Context, status, code int, msg string, data interface{}) {
 	ctx.JSON(status, map[string]interface{}{
 		"code": code,
 		"msg":  msg,
@@ -55,7 +51,7 @@ func (resp defaultEchoServiceResp) response(ctx *gin.Context, status, code int, 
 }
 
 // Error 返回错误信息
-func (resp defaultEchoServiceResp) Error(ctx *gin.Context, err error) {
+func (resp defaultBlogServiceResp) Error(ctx *gin.Context, err error) {
 	code := -1
 	status := 500
 	msg := "未知错误"
@@ -85,18 +81,18 @@ func (resp defaultEchoServiceResp) Error(ctx *gin.Context, err error) {
 }
 
 // ParamsError 参数错误
-func (resp defaultEchoServiceResp) ParamsError(ctx *gin.Context, err error) {
+func (resp defaultBlogServiceResp) ParamsError(ctx *gin.Context, err error) {
 	_ = ctx.Error(err)
 	resp.response(ctx, 400, 400, "参数错误", nil)
 }
 
 // Success 返回成功信息
-func (resp defaultEchoServiceResp) Success(ctx *gin.Context, data interface{}) {
+func (resp defaultBlogServiceResp) Success(ctx *gin.Context, data interface{}) {
 	resp.response(ctx, 200, 0, "成功", data)
 }
 
-func (s *EchoService) Echo_0(ctx *gin.Context) {
-	var in SimpleMessage
+func (s *BlogService) GetArticles_0(ctx *gin.Context) {
+	var in GetArticlesReq
 
 	if err := ctx.ShouldBindUri(&in); err != nil {
 		s.resp.ParamsError(ctx, err)
@@ -113,7 +109,7 @@ func (s *EchoService) Echo_0(ctx *gin.Context) {
 		md.Set(k, v...)
 	}
 	newCtx := metadata.NewIncomingContext(ctx, md)
-	out, err := s.server.(EchoServiceHTTPServer).Echo(newCtx, &in)
+	out, err := s.server.(BlogServiceHTTPServer).GetArticles(newCtx, &in)
 	if err != nil {
 		s.resp.Error(ctx, err)
 		return
@@ -122,8 +118,30 @@ func (s *EchoService) Echo_0(ctx *gin.Context) {
 	s.resp.Success(ctx, out)
 }
 
-func (s *EchoService) Echo_1(ctx *gin.Context) {
-	var in SimpleMessage
+func (s *BlogService) GetArticles_1(ctx *gin.Context) {
+	var in GetArticlesReq
+
+	if err := ctx.ShouldBindQuery(&in); err != nil {
+		s.resp.ParamsError(ctx, err)
+		return
+	}
+
+	md := metadata.New(nil)
+	for k, v := range ctx.Request.Header {
+		md.Set(k, v...)
+	}
+	newCtx := metadata.NewIncomingContext(ctx, md)
+	out, err := s.server.(BlogServiceHTTPServer).GetArticles(newCtx, &in)
+	if err != nil {
+		s.resp.Error(ctx, err)
+		return
+	}
+
+	s.resp.Success(ctx, out)
+}
+
+func (s *BlogService) CreateArticle_0(ctx *gin.Context) {
+	var in Article
 
 	if err := ctx.ShouldBindUri(&in); err != nil {
 		s.resp.ParamsError(ctx, err)
@@ -140,7 +158,7 @@ func (s *EchoService) Echo_1(ctx *gin.Context) {
 		md.Set(k, v...)
 	}
 	newCtx := metadata.NewIncomingContext(ctx, md)
-	out, err := s.server.(EchoServiceHTTPServer).Echo(newCtx, &in)
+	out, err := s.server.(BlogServiceHTTPServer).CreateArticle(newCtx, &in)
 	if err != nil {
 		s.resp.Error(ctx, err)
 		return
@@ -149,82 +167,12 @@ func (s *EchoService) Echo_1(ctx *gin.Context) {
 	s.resp.Success(ctx, out)
 }
 
-func (s *EchoService) EchoBody_0(ctx *gin.Context) {
-	var in SimpleMessage
+func (s *BlogService) RegisterService() {
 
-	if err := ctx.ShouldBindJSON(&in); err != nil {
-		s.resp.ParamsError(ctx, err)
-		return
-	}
+	s.router.Handle("GET", "/v1/author/:author_id/articles", s.GetArticles_0)
 
-	md := metadata.New(nil)
-	for k, v := range ctx.Request.Header {
-		md.Set(k, v...)
-	}
-	newCtx := metadata.NewIncomingContext(ctx, md)
-	out, err := s.server.(EchoServiceHTTPServer).EchoBody(newCtx, &in)
-	if err != nil {
-		s.resp.Error(ctx, err)
-		return
-	}
+	s.router.Handle("GET", "/v1/articles", s.GetArticles_1)
 
-	s.resp.Success(ctx, out)
-}
-
-func (s *EchoService) EchoDelete_0(ctx *gin.Context) {
-	var in SimpleMessage
-
-	if err := ctx.ShouldBindQuery(&in); err != nil {
-		s.resp.ParamsError(ctx, err)
-		return
-	}
-
-	md := metadata.New(nil)
-	for k, v := range ctx.Request.Header {
-		md.Set(k, v...)
-	}
-	newCtx := metadata.NewIncomingContext(ctx, md)
-	out, err := s.server.(EchoServiceHTTPServer).EchoDelete(newCtx, &in)
-	if err != nil {
-		s.resp.Error(ctx, err)
-		return
-	}
-
-	s.resp.Success(ctx, out)
-}
-
-func (s *EchoService) EchoPatch_0(ctx *gin.Context) {
-	var in DynamicMessageUpdate
-
-	if err := ctx.ShouldBind(&in); err != nil {
-		s.resp.ParamsError(ctx, err)
-		return
-	}
-
-	md := metadata.New(nil)
-	for k, v := range ctx.Request.Header {
-		md.Set(k, v...)
-	}
-	newCtx := metadata.NewIncomingContext(ctx, md)
-	out, err := s.server.(EchoServiceHTTPServer).EchoPatch(newCtx, &in)
-	if err != nil {
-		s.resp.Error(ctx, err)
-		return
-	}
-
-	s.resp.Success(ctx, out)
-}
-
-func (s *EchoService) RegisterService() {
-
-	s.router.Handle("GET", "/v1/example/echo/{id}/{num}", s.Echo_0)
-
-	s.router.Handle("POST", "/v1/example/echo/{id}", s.Echo_1)
-
-	s.router.Handle("POST", "/v1/example/echo_body", s.EchoBody_0)
-
-	s.router.Handle("DELETE", "/v1/example/echo_delete", s.EchoDelete_0)
-
-	s.router.Handle("PATCH", "/v1/example/echo_patch", s.EchoPatch_0)
+	s.router.Handle("POST", "/v1/author/:author_id/articles", s.CreateArticle_0)
 
 }

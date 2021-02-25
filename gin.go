@@ -2,8 +2,6 @@ package main
 
 import (
 	"fmt"
-	"net/http"
-	"regexp"
 	"strings"
 
 	"google.golang.org/genproto/googleapis/api/annotations"
@@ -161,7 +159,7 @@ func buildHTTPRule(m *protogen.Method, rule *annotations.HttpRule) *method {
 
 func buildMethodDesc(m *protogen.Method, httpMethod, path string) *method {
 	defer func() { methodSets[m.GoName]++ }()
-	return &method{
+	md := &method{
 		Name:    m.GoName,
 		Num:     methodSets[m.GoName],
 		Request: m.Input.GoIdent.GoName,
@@ -169,6 +167,8 @@ func buildMethodDesc(m *protogen.Method, httpMethod, path string) *method {
 		Path:    path,
 		Method:  httpMethod,
 	}
+	md.initPathParams()
+	return md
 }
 
 var matchFirstCap = regexp.MustCompile("([A-Z])([A-Z][a-z])")

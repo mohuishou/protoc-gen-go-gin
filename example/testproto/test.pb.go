@@ -6,9 +6,7 @@ package testproto
 import (
 	fmt "fmt"
 	proto "github.com/golang/protobuf/proto"
-	_struct "github.com/golang/protobuf/ptypes/struct"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
-	field_mask "google.golang.org/genproto/protobuf/field_mask"
 	math "math"
 )
 
@@ -23,434 +21,240 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.ProtoPackageIsVersion3 // please upgrade the proto package
 
-type Corpus int32
-
-const (
-	Corpus_UNIVERSAL Corpus = 0
-	Corpus_WEB       Corpus = 1
-	Corpus_IMAGES    Corpus = 2
-	Corpus_LOCAL     Corpus = 3
-	Corpus_NEWS      Corpus = 4
-	Corpus_PRODUCTS  Corpus = 5
-	Corpus_VIDEO     Corpus = 6
-)
-
-var Corpus_name = map[int32]string{
-	0: "UNIVERSAL",
-	1: "WEB",
-	2: "IMAGES",
-	3: "LOCAL",
-	4: "NEWS",
-	5: "PRODUCTS",
-	6: "VIDEO",
+type GetArticlesReq struct {
+	// @inject_tag: form:"title"
+	Title string `protobuf:"bytes,1,opt,name=title,proto3" json:"title,omitempty" form:"title"`
+	// @inject_tag: form:"page"
+	Page int32 `protobuf:"varint,2,opt,name=page,proto3" json:"page,omitempty" form:"page"`
+	// @inject_tag: form:"page_size"
+	PageSize int32 `protobuf:"varint,3,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty" form:"page_size"`
+	// @inject_tag: form:"author_id" uri:"author_id"
+	AuthorId             int32    `protobuf:"varint,4,opt,name=author_id,json=authorId,proto3" json:"author_id,omitempty" form:"author_id" uri:"author_id"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
 }
 
-var Corpus_value = map[string]int32{
-	"UNIVERSAL": 0,
-	"WEB":       1,
-	"IMAGES":    2,
-	"LOCAL":     3,
-	"NEWS":      4,
-	"PRODUCTS":  5,
-	"VIDEO":     6,
-}
-
-func (x Corpus) String() string {
-	return proto.EnumName(Corpus_name, int32(x))
-}
-
-func (Corpus) EnumDescriptor() ([]byte, []int) {
+func (m *GetArticlesReq) Reset()         { *m = GetArticlesReq{} }
+func (m *GetArticlesReq) String() string { return proto.CompactTextString(m) }
+func (*GetArticlesReq) ProtoMessage()    {}
+func (*GetArticlesReq) Descriptor() ([]byte, []int) {
 	return fileDescriptor_a111ee603e695d6e, []int{0}
 }
 
-// Embedded represents a message embedded in SimpleMessage.
-type Embedded struct {
-	// Types that are valid to be assigned to Mark:
-	//	*Embedded_Progress
-	//	*Embedded_Note
-	Mark                 isEmbedded_Mark `protobuf_oneof:"mark"`
-	XXX_NoUnkeyedLiteral struct{}        `json:"-"`
-	XXX_unrecognized     []byte          `json:"-"`
-	XXX_sizecache        int32           `json:"-"`
+func (m *GetArticlesReq) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_GetArticlesReq.Unmarshal(m, b)
+}
+func (m *GetArticlesReq) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_GetArticlesReq.Marshal(b, m, deterministic)
+}
+func (m *GetArticlesReq) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_GetArticlesReq.Merge(m, src)
+}
+func (m *GetArticlesReq) XXX_Size() int {
+	return xxx_messageInfo_GetArticlesReq.Size(m)
+}
+func (m *GetArticlesReq) XXX_DiscardUnknown() {
+	xxx_messageInfo_GetArticlesReq.DiscardUnknown(m)
 }
 
-func (m *Embedded) Reset()         { *m = Embedded{} }
-func (m *Embedded) String() string { return proto.CompactTextString(m) }
-func (*Embedded) ProtoMessage()    {}
-func (*Embedded) Descriptor() ([]byte, []int) {
-	return fileDescriptor_a111ee603e695d6e, []int{0}
-}
+var xxx_messageInfo_GetArticlesReq proto.InternalMessageInfo
 
-func (m *Embedded) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_Embedded.Unmarshal(m, b)
-}
-func (m *Embedded) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_Embedded.Marshal(b, m, deterministic)
-}
-func (m *Embedded) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_Embedded.Merge(m, src)
-}
-func (m *Embedded) XXX_Size() int {
-	return xxx_messageInfo_Embedded.Size(m)
-}
-func (m *Embedded) XXX_DiscardUnknown() {
-	xxx_messageInfo_Embedded.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_Embedded proto.InternalMessageInfo
-
-type isEmbedded_Mark interface {
-	isEmbedded_Mark()
-}
-
-type Embedded_Progress struct {
-	Progress int64 `protobuf:"varint,1,opt,name=progress,proto3,oneof"`
-}
-
-type Embedded_Note struct {
-	Note string `protobuf:"bytes,2,opt,name=note,proto3,oneof"`
-}
-
-func (*Embedded_Progress) isEmbedded_Mark() {}
-
-func (*Embedded_Note) isEmbedded_Mark() {}
-
-func (m *Embedded) GetMark() isEmbedded_Mark {
+func (m *GetArticlesReq) GetTitle() string {
 	if m != nil {
-		return m.Mark
-	}
-	return nil
-}
-
-func (m *Embedded) GetProgress() int64 {
-	if x, ok := m.GetMark().(*Embedded_Progress); ok {
-		return x.Progress
-	}
-	return 0
-}
-
-func (m *Embedded) GetNote() string {
-	if x, ok := m.GetMark().(*Embedded_Note); ok {
-		return x.Note
+		return m.Title
 	}
 	return ""
 }
 
-// XXX_OneofWrappers is for the internal use of the proto package.
-func (*Embedded) XXX_OneofWrappers() []interface{} {
-	return []interface{}{
-		(*Embedded_Progress)(nil),
-		(*Embedded_Note)(nil),
+func (m *GetArticlesReq) GetPage() int32 {
+	if m != nil {
+		return m.Page
 	}
+	return 0
 }
 
-// SimpleMessage represents a simple message sent to the Echo service.
-type SimpleMessage struct {
-	// Id represents the message identifier.
-	Id  string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	Num int64  `protobuf:"varint,2,opt,name=num,proto3" json:"num,omitempty"`
-	// Types that are valid to be assigned to Code:
-	//	*SimpleMessage_LineNum
-	//	*SimpleMessage_Lang
-	Code   isSimpleMessage_Code `protobuf_oneof:"code"`
-	Status *Embedded            `protobuf:"bytes,5,opt,name=status,proto3" json:"status,omitempty"`
-	// Types that are valid to be assigned to Ext:
-	//	*SimpleMessage_En
-	//	*SimpleMessage_No
-	Ext                  isSimpleMessage_Ext `protobuf_oneof:"ext"`
-	Corpus               Corpus              `protobuf:"varint,8,opt,name=corpus,proto3,enum=testproto.Corpus" json:"corpus,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}            `json:"-"`
-	XXX_unrecognized     []byte              `json:"-"`
-	XXX_sizecache        int32               `json:"-"`
+func (m *GetArticlesReq) GetPageSize() int32 {
+	if m != nil {
+		return m.PageSize
+	}
+	return 0
 }
 
-func (m *SimpleMessage) Reset()         { *m = SimpleMessage{} }
-func (m *SimpleMessage) String() string { return proto.CompactTextString(m) }
-func (*SimpleMessage) ProtoMessage()    {}
-func (*SimpleMessage) Descriptor() ([]byte, []int) {
+func (m *GetArticlesReq) GetAuthorId() int32 {
+	if m != nil {
+		return m.AuthorId
+	}
+	return 0
+}
+
+type GetArticlesResp struct {
+	Total                int64      `protobuf:"varint,1,opt,name=total,proto3" json:"total,omitempty"`
+	Articles             []*Article `protobuf:"bytes,2,rep,name=articles,proto3" json:"articles,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}   `json:"-"`
+	XXX_unrecognized     []byte     `json:"-"`
+	XXX_sizecache        int32      `json:"-"`
+}
+
+func (m *GetArticlesResp) Reset()         { *m = GetArticlesResp{} }
+func (m *GetArticlesResp) String() string { return proto.CompactTextString(m) }
+func (*GetArticlesResp) ProtoMessage()    {}
+func (*GetArticlesResp) Descriptor() ([]byte, []int) {
 	return fileDescriptor_a111ee603e695d6e, []int{1}
 }
 
-func (m *SimpleMessage) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_SimpleMessage.Unmarshal(m, b)
+func (m *GetArticlesResp) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_GetArticlesResp.Unmarshal(m, b)
 }
-func (m *SimpleMessage) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_SimpleMessage.Marshal(b, m, deterministic)
+func (m *GetArticlesResp) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_GetArticlesResp.Marshal(b, m, deterministic)
 }
-func (m *SimpleMessage) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_SimpleMessage.Merge(m, src)
+func (m *GetArticlesResp) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_GetArticlesResp.Merge(m, src)
 }
-func (m *SimpleMessage) XXX_Size() int {
-	return xxx_messageInfo_SimpleMessage.Size(m)
+func (m *GetArticlesResp) XXX_Size() int {
+	return xxx_messageInfo_GetArticlesResp.Size(m)
 }
-func (m *SimpleMessage) XXX_DiscardUnknown() {
-	xxx_messageInfo_SimpleMessage.DiscardUnknown(m)
+func (m *GetArticlesResp) XXX_DiscardUnknown() {
+	xxx_messageInfo_GetArticlesResp.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_SimpleMessage proto.InternalMessageInfo
+var xxx_messageInfo_GetArticlesResp proto.InternalMessageInfo
 
-func (m *SimpleMessage) GetId() string {
+func (m *GetArticlesResp) GetTotal() int64 {
 	if m != nil {
-		return m.Id
-	}
-	return ""
-}
-
-func (m *SimpleMessage) GetNum() int64 {
-	if m != nil {
-		return m.Num
+		return m.Total
 	}
 	return 0
 }
 
-type isSimpleMessage_Code interface {
-	isSimpleMessage_Code()
-}
-
-type SimpleMessage_LineNum struct {
-	LineNum int64 `protobuf:"varint,3,opt,name=line_num,json=lineNum,proto3,oneof"`
-}
-
-type SimpleMessage_Lang struct {
-	Lang string `protobuf:"bytes,4,opt,name=lang,proto3,oneof"`
-}
-
-func (*SimpleMessage_LineNum) isSimpleMessage_Code() {}
-
-func (*SimpleMessage_Lang) isSimpleMessage_Code() {}
-
-func (m *SimpleMessage) GetCode() isSimpleMessage_Code {
+func (m *GetArticlesResp) GetArticles() []*Article {
 	if m != nil {
-		return m.Code
+		return m.Articles
 	}
 	return nil
 }
 
-func (m *SimpleMessage) GetLineNum() int64 {
-	if x, ok := m.GetCode().(*SimpleMessage_LineNum); ok {
-		return x.LineNum
-	}
-	return 0
+type Article struct {
+	Title   string `protobuf:"bytes,1,opt,name=title,proto3" json:"title,omitempty"`
+	Content string `protobuf:"bytes,2,opt,name=content,proto3" json:"content,omitempty"`
+	// @inject_tag: form:"author_id" uri:"author_id"
+	AuthorId             int32    `protobuf:"varint,3,opt,name=author_id,json=authorId,proto3" json:"author_id,omitempty" form:"author_id" uri:"author_id"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *SimpleMessage) GetLang() string {
-	if x, ok := m.GetCode().(*SimpleMessage_Lang); ok {
-		return x.Lang
-	}
-	return ""
-}
-
-func (m *SimpleMessage) GetStatus() *Embedded {
-	if m != nil {
-		return m.Status
-	}
-	return nil
-}
-
-type isSimpleMessage_Ext interface {
-	isSimpleMessage_Ext()
-}
-
-type SimpleMessage_En struct {
-	En int64 `protobuf:"varint,6,opt,name=en,proto3,oneof"`
-}
-
-type SimpleMessage_No struct {
-	No *Embedded `protobuf:"bytes,7,opt,name=no,proto3,oneof"`
-}
-
-func (*SimpleMessage_En) isSimpleMessage_Ext() {}
-
-func (*SimpleMessage_No) isSimpleMessage_Ext() {}
-
-func (m *SimpleMessage) GetExt() isSimpleMessage_Ext {
-	if m != nil {
-		return m.Ext
-	}
-	return nil
-}
-
-func (m *SimpleMessage) GetEn() int64 {
-	if x, ok := m.GetExt().(*SimpleMessage_En); ok {
-		return x.En
-	}
-	return 0
-}
-
-func (m *SimpleMessage) GetNo() *Embedded {
-	if x, ok := m.GetExt().(*SimpleMessage_No); ok {
-		return x.No
-	}
-	return nil
-}
-
-func (m *SimpleMessage) GetCorpus() Corpus {
-	if m != nil {
-		return m.Corpus
-	}
-	return Corpus_UNIVERSAL
-}
-
-// XXX_OneofWrappers is for the internal use of the proto package.
-func (*SimpleMessage) XXX_OneofWrappers() []interface{} {
-	return []interface{}{
-		(*SimpleMessage_LineNum)(nil),
-		(*SimpleMessage_Lang)(nil),
-		(*SimpleMessage_En)(nil),
-		(*SimpleMessage_No)(nil),
-	}
-}
-
-// DynamicMessage represents a message which can have its structure
-// built dynamically using Struct and Values.
-type DynamicMessage struct {
-	StructField          *_struct.Struct `protobuf:"bytes,1,opt,name=struct_field,json=structField,proto3" json:"struct_field,omitempty"`
-	ValueField           *_struct.Value  `protobuf:"bytes,2,opt,name=value_field,json=valueField,proto3" json:"value_field,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}        `json:"-"`
-	XXX_unrecognized     []byte          `json:"-"`
-	XXX_sizecache        int32           `json:"-"`
-}
-
-func (m *DynamicMessage) Reset()         { *m = DynamicMessage{} }
-func (m *DynamicMessage) String() string { return proto.CompactTextString(m) }
-func (*DynamicMessage) ProtoMessage()    {}
-func (*DynamicMessage) Descriptor() ([]byte, []int) {
+func (m *Article) Reset()         { *m = Article{} }
+func (m *Article) String() string { return proto.CompactTextString(m) }
+func (*Article) ProtoMessage()    {}
+func (*Article) Descriptor() ([]byte, []int) {
 	return fileDescriptor_a111ee603e695d6e, []int{2}
 }
 
-func (m *DynamicMessage) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_DynamicMessage.Unmarshal(m, b)
+func (m *Article) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_Article.Unmarshal(m, b)
 }
-func (m *DynamicMessage) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_DynamicMessage.Marshal(b, m, deterministic)
+func (m *Article) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_Article.Marshal(b, m, deterministic)
 }
-func (m *DynamicMessage) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_DynamicMessage.Merge(m, src)
+func (m *Article) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_Article.Merge(m, src)
 }
-func (m *DynamicMessage) XXX_Size() int {
-	return xxx_messageInfo_DynamicMessage.Size(m)
+func (m *Article) XXX_Size() int {
+	return xxx_messageInfo_Article.Size(m)
 }
-func (m *DynamicMessage) XXX_DiscardUnknown() {
-	xxx_messageInfo_DynamicMessage.DiscardUnknown(m)
+func (m *Article) XXX_DiscardUnknown() {
+	xxx_messageInfo_Article.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_DynamicMessage proto.InternalMessageInfo
+var xxx_messageInfo_Article proto.InternalMessageInfo
 
-func (m *DynamicMessage) GetStructField() *_struct.Struct {
+func (m *Article) GetTitle() string {
 	if m != nil {
-		return m.StructField
+		return m.Title
 	}
-	return nil
+	return ""
 }
 
-func (m *DynamicMessage) GetValueField() *_struct.Value {
+func (m *Article) GetContent() string {
 	if m != nil {
-		return m.ValueField
+		return m.Content
 	}
-	return nil
+	return ""
 }
 
-type DynamicMessageUpdate struct {
-	Body                 *DynamicMessage       `protobuf:"bytes,1,opt,name=body,proto3" json:"body,omitempty"`
-	UpdateMask           *field_mask.FieldMask `protobuf:"bytes,2,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}              `json:"-"`
-	XXX_unrecognized     []byte                `json:"-"`
-	XXX_sizecache        int32                 `json:"-"`
+func (m *Article) GetAuthorId() int32 {
+	if m != nil {
+		return m.AuthorId
+	}
+	return 0
 }
 
-func (m *DynamicMessageUpdate) Reset()         { *m = DynamicMessageUpdate{} }
-func (m *DynamicMessageUpdate) String() string { return proto.CompactTextString(m) }
-func (*DynamicMessageUpdate) ProtoMessage()    {}
-func (*DynamicMessageUpdate) Descriptor() ([]byte, []int) {
+type Empty struct {
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *Empty) Reset()         { *m = Empty{} }
+func (m *Empty) String() string { return proto.CompactTextString(m) }
+func (*Empty) ProtoMessage()    {}
+func (*Empty) Descriptor() ([]byte, []int) {
 	return fileDescriptor_a111ee603e695d6e, []int{3}
 }
 
-func (m *DynamicMessageUpdate) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_DynamicMessageUpdate.Unmarshal(m, b)
+func (m *Empty) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_Empty.Unmarshal(m, b)
 }
-func (m *DynamicMessageUpdate) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_DynamicMessageUpdate.Marshal(b, m, deterministic)
+func (m *Empty) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_Empty.Marshal(b, m, deterministic)
 }
-func (m *DynamicMessageUpdate) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_DynamicMessageUpdate.Merge(m, src)
+func (m *Empty) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_Empty.Merge(m, src)
 }
-func (m *DynamicMessageUpdate) XXX_Size() int {
-	return xxx_messageInfo_DynamicMessageUpdate.Size(m)
+func (m *Empty) XXX_Size() int {
+	return xxx_messageInfo_Empty.Size(m)
 }
-func (m *DynamicMessageUpdate) XXX_DiscardUnknown() {
-	xxx_messageInfo_DynamicMessageUpdate.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_DynamicMessageUpdate proto.InternalMessageInfo
-
-func (m *DynamicMessageUpdate) GetBody() *DynamicMessage {
-	if m != nil {
-		return m.Body
-	}
-	return nil
+func (m *Empty) XXX_DiscardUnknown() {
+	xxx_messageInfo_Empty.DiscardUnknown(m)
 }
 
-func (m *DynamicMessageUpdate) GetUpdateMask() *field_mask.FieldMask {
-	if m != nil {
-		return m.UpdateMask
-	}
-	return nil
-}
+var xxx_messageInfo_Empty proto.InternalMessageInfo
 
 func init() {
-	proto.RegisterEnum("testproto.Corpus", Corpus_name, Corpus_value)
-	proto.RegisterType((*Embedded)(nil), "testproto.Embedded")
-	proto.RegisterType((*SimpleMessage)(nil), "testproto.SimpleMessage")
-	proto.RegisterType((*DynamicMessage)(nil), "testproto.DynamicMessage")
-	proto.RegisterType((*DynamicMessageUpdate)(nil), "testproto.DynamicMessageUpdate")
+	proto.RegisterType((*GetArticlesReq)(nil), "testproto.GetArticlesReq")
+	proto.RegisterType((*GetArticlesResp)(nil), "testproto.GetArticlesResp")
+	proto.RegisterType((*Article)(nil), "testproto.Article")
+	proto.RegisterType((*Empty)(nil), "testproto.Empty")
 }
 
 func init() { proto.RegisterFile("testproto/test.proto", fileDescriptor_a111ee603e695d6e) }
 
 var fileDescriptor_a111ee603e695d6e = []byte{
-	// 704 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x9c, 0x94, 0xdf, 0x4e, 0xdb, 0x4a,
-	0x10, 0xc6, 0xb1, 0x9d, 0x98, 0x64, 0x02, 0xc8, 0x67, 0x0f, 0x07, 0x4c, 0xe0, 0x94, 0x28, 0x6a,
-	0xa5, 0x94, 0x2a, 0xb6, 0x9a, 0x4a, 0xad, 0x04, 0xbd, 0x21, 0x24, 0x14, 0x24, 0xfe, 0xc9, 0x29,
-	0x20, 0x71, 0x93, 0x6e, 0xec, 0xc5, 0xb1, 0x88, 0x77, 0xa3, 0x78, 0x8d, 0x40, 0x88, 0x1b, 0xd4,
-	0x3e, 0x41, 0x9f, 0xa8, 0xcf, 0xd0, 0x57, 0xe8, 0x83, 0x54, 0xbb, 0x76, 0x2c, 0xa2, 0x14, 0x55,
-	0xe2, 0xca, 0xb3, 0x3b, 0xdf, 0xb7, 0xbf, 0xdd, 0x99, 0x91, 0x61, 0x91, 0x93, 0x88, 0x0f, 0x47,
-	0x8c, 0x33, 0x5b, 0x44, 0x96, 0x0c, 0x51, 0x31, 0xdb, 0x2d, 0xaf, 0xf9, 0x8c, 0xf9, 0x03, 0x62,
-	0xe3, 0x61, 0x60, 0x63, 0x4a, 0x19, 0xc7, 0x3c, 0x60, 0x34, 0x4a, 0x84, 0xe5, 0x4a, 0x9a, 0x95,
-	0xab, 0x5e, 0x7c, 0x69, 0x5f, 0x06, 0x64, 0xe0, 0x75, 0x43, 0x1c, 0x5d, 0x59, 0x93, 0xfe, 0x4c,
-	0x11, 0xf1, 0x51, 0xec, 0xa6, 0xa0, 0xea, 0x2e, 0x14, 0xda, 0x61, 0x8f, 0x78, 0x1e, 0xf1, 0xd0,
-	0x1a, 0x14, 0x86, 0x23, 0xe6, 0x8f, 0x48, 0x14, 0x99, 0x4a, 0x45, 0xa9, 0x69, 0x7b, 0x33, 0x4e,
-	0xb6, 0x83, 0x16, 0x21, 0x47, 0x19, 0x27, 0xa6, 0x5a, 0x51, 0x6a, 0xc5, 0xbd, 0x19, 0x47, 0xae,
-	0x9a, 0x3a, 0xe4, 0x42, 0x3c, 0xba, 0xaa, 0x7e, 0x55, 0x61, 0xbe, 0x13, 0x84, 0xc3, 0x01, 0x39,
-	0x24, 0x51, 0x84, 0x7d, 0x82, 0x16, 0x40, 0x0d, 0x3c, 0x79, 0x4e, 0xd1, 0x51, 0x03, 0x0f, 0x19,
-	0xa0, 0xd1, 0x38, 0x94, 0x76, 0xcd, 0x11, 0x21, 0x5a, 0x85, 0xc2, 0x20, 0xa0, 0xa4, 0x2b, 0xb6,
-	0xb5, 0x94, 0x37, 0x2b, 0x76, 0x8e, 0xe2, 0x50, 0xe0, 0x06, 0x98, 0xfa, 0x66, 0x6e, 0x8c, 0x13,
-	0x2b, 0xf4, 0x06, 0xf4, 0x88, 0x63, 0x1e, 0x47, 0x66, 0xbe, 0xa2, 0xd4, 0x4a, 0x8d, 0x7f, 0xad,
-	0xac, 0x50, 0xd6, 0xf8, 0x1d, 0x4e, 0x2a, 0x41, 0x06, 0xa8, 0x84, 0x9a, 0xba, 0x3c, 0x59, 0x71,
-	0x54, 0x42, 0xd1, 0x2b, 0x50, 0x29, 0x33, 0x67, 0x9f, 0xb4, 0x0a, 0x19, 0x65, 0xe8, 0x35, 0xe8,
-	0x2e, 0x1b, 0x0d, 0xe3, 0xc8, 0x2c, 0x54, 0x94, 0xda, 0x42, 0xe3, 0x9f, 0x47, 0xd2, 0x1d, 0x99,
-	0x70, 0x52, 0x81, 0x78, 0xbf, 0xcb, 0x3c, 0xd2, 0xcc, 0x83, 0x46, 0x6e, 0x78, 0xf5, 0x9b, 0x02,
-	0x0b, 0xad, 0x5b, 0x8a, 0xc3, 0xc0, 0x1d, 0xd7, 0x61, 0x13, 0xe6, 0x92, 0x8a, 0x77, 0x65, 0x6b,
-	0x64, 0x45, 0x4a, 0x8d, 0x65, 0x2b, 0x69, 0x8b, 0x35, 0x6e, 0x8b, 0xd5, 0x91, 0x22, 0xa7, 0x94,
-	0x88, 0x77, 0x85, 0x16, 0x7d, 0x80, 0xd2, 0x35, 0x1e, 0xc4, 0x24, 0xb5, 0xaa, 0xd2, 0xba, 0x34,
-	0x65, 0x3d, 0x13, 0x1a, 0x07, 0xa4, 0x54, 0x1a, 0xab, 0x0f, 0x0a, 0x2c, 0x4e, 0xde, 0xe3, 0x74,
-	0xe8, 0x61, 0x4e, 0x50, 0x1d, 0x72, 0x3d, 0xe6, 0xdd, 0xa6, 0xb7, 0x58, 0x79, 0xf4, 0xb0, 0x49,
-	0xb9, 0x23, 0x65, 0x68, 0x0b, 0x4a, 0xb1, 0x34, 0xca, 0x89, 0x4a, 0x2f, 0x50, 0x9e, 0xba, 0x80,
-	0x84, 0x1e, 0xe2, 0xe8, 0xca, 0x81, 0x44, 0x2e, 0xe2, 0x8d, 0x0b, 0xd0, 0x93, 0x6a, 0xa1, 0x79,
-	0x28, 0x9e, 0x1e, 0xed, 0x9f, 0xb5, 0x9d, 0xce, 0xf6, 0x81, 0x31, 0x83, 0x66, 0x41, 0x3b, 0x6f,
-	0x37, 0x0d, 0x05, 0x01, 0xe8, 0xfb, 0x87, 0xdb, 0x9f, 0xda, 0x1d, 0x43, 0x45, 0x45, 0xc8, 0x1f,
-	0x1c, 0xef, 0x6c, 0x1f, 0x18, 0x1a, 0x2a, 0x40, 0xee, 0xa8, 0x7d, 0xde, 0x31, 0x72, 0x68, 0x0e,
-	0x0a, 0x27, 0xce, 0x71, 0xeb, 0x74, 0xe7, 0x73, 0xc7, 0xc8, 0x0b, 0xc9, 0xd9, 0x7e, 0xab, 0x7d,
-	0x6c, 0xe8, 0x8d, 0x1f, 0x1a, 0x94, 0xda, 0x6e, 0x9f, 0x75, 0xc8, 0xe8, 0x3a, 0x70, 0x09, 0xba,
-	0x81, 0x9c, 0x58, 0x22, 0xf3, 0xd1, 0x8b, 0x26, 0xe6, 0xb1, 0xfc, 0x64, 0xa6, 0xfa, 0xf1, 0xe1,
-	0xe7, 0xaf, 0xef, 0xea, 0xfb, 0xea, 0x7f, 0xf6, 0xf5, 0x5b, 0x9b, 0xdc, 0x60, 0x91, 0xb3, 0x89,
-	0xdb, 0x67, 0xf6, 0x5d, 0xe0, 0xdd, 0x5f, 0xfc, 0x8f, 0x56, 0xff, 0x98, 0xb0, 0xef, 0x68, 0x1c,
-	0xde, 0xa3, 0x2f, 0x50, 0x10, 0xe4, 0xa6, 0x28, 0xd7, 0x73, 0xe8, 0x15, 0x49, 0x2f, 0x4f, 0xd3,
-	0xbb, 0xa2, 0x03, 0x9b, 0xca, 0x06, 0xc2, 0x00, 0x82, 0xd0, 0x22, 0x03, 0xc2, 0xc9, 0xb3, 0x18,
-	0xeb, 0x92, 0xb1, 0xb2, 0xb1, 0x3c, 0xc5, 0xf0, 0x92, 0x43, 0x23, 0x28, 0x0a, 0xc4, 0x09, 0xe6,
-	0x6e, 0x1f, 0xad, 0x3f, 0x39, 0x15, 0xc9, 0x10, 0x95, 0xff, 0x26, 0xa8, 0xbe, 0x94, 0xbc, 0x17,
-	0x8d, 0xa5, 0x29, 0xde, 0x50, 0x10, 0x36, 0xe5, 0x70, 0x35, 0x5b, 0x17, 0x4d, 0x3f, 0xe0, 0xfd,
-	0xb8, 0x67, 0xb9, 0x2c, 0xb4, 0x43, 0xd6, 0x8f, 0x83, 0xa8, 0xcf, 0xe2, 0xe4, 0x4f, 0xe5, 0xd6,
-	0x7d, 0x42, 0xeb, 0x3e, 0xab, 0xfb, 0x01, 0xcd, 0x8e, 0xc8, 0xb0, 0x5b, 0x59, 0xd4, 0xd3, 0xe5,
-	0xe7, 0xdd, 0xef, 0x00, 0x00, 0x00, 0xff, 0xff, 0xe8, 0xaa, 0xeb, 0xf7, 0x49, 0x05, 0x00, 0x00,
+	// 384 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x84, 0x50, 0x4d, 0x6f, 0xda, 0x40,
+	0x14, 0x94, 0x31, 0x14, 0xbc, 0xf4, 0x4b, 0x2b, 0x0e, 0xae, 0x5b, 0xa9, 0xe0, 0x4b, 0xb9, 0xe0,
+	0x15, 0xf4, 0xd0, 0x43, 0x4f, 0xa5, 0x89, 0xa2, 0x5c, 0x8d, 0x94, 0x48, 0x1c, 0x82, 0x16, 0xf3,
+	0xb4, 0x5e, 0xc9, 0xf6, 0x3a, 0xf6, 0x33, 0x4a, 0x88, 0xb8, 0xe4, 0x2f, 0xe4, 0xa7, 0xe5, 0x2f,
+	0xe4, 0x98, 0x1f, 0x11, 0xb1, 0x06, 0x0b, 0xa2, 0xa0, 0x9c, 0xf6, 0xbd, 0x99, 0xd1, 0x9b, 0x99,
+	0x25, 0x1d, 0x84, 0x1c, 0xd3, 0x4c, 0xa1, 0x62, 0x9b, 0xc9, 0xd3, 0x23, 0xb5, 0x2a, 0xd4, 0xf9,
+	0x21, 0x94, 0x12, 0x11, 0x30, 0x9e, 0x4a, 0xc6, 0x93, 0x44, 0x21, 0x47, 0xa9, 0x92, 0xbc, 0x14,
+	0xba, 0x48, 0x3e, 0x9f, 0x01, 0xfe, 0xcb, 0x50, 0x06, 0x11, 0xe4, 0x3e, 0x5c, 0xd3, 0x0e, 0x69,
+	0xa0, 0xc4, 0x08, 0x6c, 0xa3, 0x6b, 0xf4, 0x2d, 0xbf, 0x5c, 0x28, 0x25, 0xf5, 0x94, 0x0b, 0xb0,
+	0x6b, 0x5d, 0xa3, 0xdf, 0xf0, 0xf5, 0x4c, 0xbf, 0x13, 0x6b, 0xf3, 0xce, 0x72, 0xb9, 0x02, 0xdb,
+	0xd4, 0x44, 0x6b, 0x03, 0x4c, 0xe4, 0x4a, 0x93, 0xbc, 0xc0, 0x50, 0x65, 0x33, 0xb9, 0xb0, 0xeb,
+	0x25, 0x59, 0x02, 0xe7, 0x0b, 0xf7, 0x92, 0x7c, 0x39, 0x70, 0xcd, 0x53, 0x6d, 0xab, 0x90, 0x47,
+	0xda, 0xd6, 0xf4, 0xcb, 0x85, 0x7a, 0xa4, 0xc5, 0xb7, 0x2a, 0xbb, 0xd6, 0x35, 0xfb, 0xed, 0x11,
+	0xf5, 0xaa, 0x6a, 0xde, 0xf6, 0x80, 0x5f, 0x69, 0xdc, 0x0b, 0xd2, 0xdc, 0x82, 0x47, 0x7a, 0xd8,
+	0xa4, 0x19, 0xa8, 0x04, 0x21, 0x41, 0x5d, 0xc5, 0xf2, 0x77, 0xeb, 0x61, 0x60, 0xf3, 0x55, 0xe0,
+	0x26, 0x69, 0x9c, 0xc6, 0x29, 0xde, 0x8e, 0x9e, 0x0d, 0xd2, 0x1e, 0x47, 0x4a, 0x4c, 0x20, 0x5b,
+	0xca, 0x00, 0xe8, 0x9a, 0xb4, 0xf7, 0x9a, 0xd0, 0x6f, 0x7b, 0xe9, 0x0e, 0xff, 0xd5, 0x71, 0x8e,
+	0x51, 0x79, 0xea, 0xfe, 0xb9, 0x7f, 0x7c, 0x7a, 0xa8, 0x0d, 0xe9, 0x47, 0xb6, 0x1c, 0xb2, 0x5d,
+	0x99, 0x69, 0x8f, 0xfe, 0xd4, 0xbb, 0x0e, 0xc1, 0xee, 0xaa, 0x74, 0xeb, 0x4a, 0x42, 0xaf, 0xc8,
+	0xa7, 0xff, 0x19, 0x70, 0x84, 0x5d, 0xeb, 0x37, 0xbe, 0xc7, 0xf9, 0xba, 0x87, 0xe9, 0x16, 0xee,
+	0x2f, 0xed, 0xd7, 0x73, 0xdf, 0xbb, 0x3f, 0x3e, 0x99, 0x8e, 0x85, 0xc4, 0xb0, 0x98, 0x7b, 0x81,
+	0x8a, 0x59, 0xac, 0xc2, 0x42, 0xe6, 0xa1, 0x2a, 0x98, 0x3e, 0x16, 0x0c, 0x04, 0x24, 0x03, 0xa1,
+	0x06, 0x42, 0x26, 0x0c, 0x6e, 0x78, 0x9c, 0x46, 0xc0, 0x2a, 0xab, 0xbf, 0xd5, 0x34, 0xff, 0xa0,
+	0x9f, 0xdf, 0x2f, 0x01, 0x00, 0x00, 0xff, 0xff, 0x03, 0x25, 0x6f, 0x42, 0xac, 0x02, 0x00, 0x00,
 }

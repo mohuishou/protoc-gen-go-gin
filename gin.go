@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"net/http"
 	"regexp"
 	"strings"
@@ -58,16 +57,7 @@ func genService(gen *protogen.Plugin, file *protogen.File, g *protogen.Generated
 	}
 
 	for _, method := range s.Methods {
-		rule, ok := proto.GetExtension(method.Desc.Options(), annotations.E_Http).(*annotations.HttpRule)
-		if rule != nil && ok {
-			for _, bind := range rule.AdditionalBindings {
-				sd.Methods = append(sd.Methods, buildHTTPRule(method, bind))
-			}
-			sd.Methods = append(sd.Methods, buildHTTPRule(method, rule))
-		} else {
-			path := fmt.Sprintf("/%s/%s", s.Desc.FullName(), method.Desc.Name())
-			sd.Methods = append(sd.Methods, buildMethodDesc(method, "POST", path))
-		}
+		sd.Methods = append(sd.Methods, genMethod(method)...)
 	}
 	g.P(sd.execute())
 }

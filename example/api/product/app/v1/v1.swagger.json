@@ -1,7 +1,7 @@
 {
   "swagger": "2.0",
   "info": {
-    "title": "testproto/test.proto",
+    "title": "product/app/v1/v1.proto",
     "version": "version not set"
   },
   "consumes": [
@@ -18,7 +18,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/testprotoGetArticlesResp"
+              "$ref": "#/definitions/v1GetArticlesResp"
             }
           },
           "default": {
@@ -73,7 +73,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/testprotoGetArticlesResp"
+              "$ref": "#/definitions/v1GetArticlesResp"
             }
           },
           "default": {
@@ -126,7 +126,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/testprotoEmpty"
+              "$ref": "#/definitions/v1Article"
             }
           },
           "default": {
@@ -183,7 +183,7 @@
         }
       }
     },
-    "testprotoArticle": {
+    "v1Article": {
       "type": "object",
       "properties": {
         "title": {
@@ -199,10 +199,7 @@
         }
       }
     },
-    "testprotoEmpty": {
-      "type": "object"
-    },
-    "testprotoGetArticlesResp": {
+    "v1GetArticlesResp": {
       "type": "object",
       "properties": {
         "total": {
@@ -212,7 +209,7 @@
         "articles": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/testprotoArticle"
+            "$ref": "#/definitions/v1Article"
           }
         }
       }

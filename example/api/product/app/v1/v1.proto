@@ -1,16 +1,13 @@
 syntax = "proto3";
 
-option go_package = "github.com/mohuishou/protoc-gen-go-gin/example/testproto;testproto";
+option go_package = "github.com/mohuishou/protoc-gen-go-gin/example/api/product/app/v1";
 
-package testproto;
+package product.app.v1;
 
 import "google/api/annotations.proto";
-// import "google/protobuf/field_mask.proto";
-// import "google/protobuf/struct.proto";
 
 // blog service is a blog demo
 service BlogService {
-
 	rpc GetArticles(GetArticlesReq) returns (GetArticlesResp) {
 		option (google.api.http) = {
 			get: "/v1/articles"
@@ -20,7 +17,7 @@ service BlogService {
 		};
 	}
 
-	rpc CreateArticle(Article) returns (Empty) {
+	rpc CreateArticle(Article) returns (Article) {
 		option (google.api.http) = {
 			post: "/v1/author/{author_id}/articles"
 		};
@@ -52,5 +49,3 @@ message Article {
 	// @inject_tag: form:"author_id" uri:"author_id"
 	int32 author_id = 3;
 }
-
-message Empty {}

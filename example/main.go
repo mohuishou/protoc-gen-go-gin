@@ -4,27 +4,27 @@ import (
 	"context"
 
 	"github.com/gin-gonic/gin"
-	"github.com/mohuishou/protoc-gen-go-gin/example/testproto"
+	v1 "github.com/mohuishou/protoc-gen-go-gin/example/api/product/app/v1"
 	"github.com/pkg/errors"
 )
 
 type service struct {
 }
 
-func (s service) CreateArticle(ctx context.Context, article *testproto.Article) (*testproto.Empty, error) {
+func (s service) CreateArticle(ctx context.Context, article *v1.Article) (*v1.Article, error) {
 	if article.AuthorId < 1 {
 		return nil, errors.Errorf("author id must > 0")
 	}
-	return nil, nil
+	return article, nil
 }
 
-func (s service) GetArticles(ctx context.Context, req *testproto.GetArticlesReq) (*testproto.GetArticlesResp, error) {
+func (s service) GetArticles(ctx context.Context, req *v1.GetArticlesReq) (*v1.GetArticlesResp, error) {
 	if req.AuthorId < 0 {
 		return nil, errors.Errorf("author id must >= 0")
 	}
-	return &testproto.GetArticlesResp{
+	return &v1.GetArticlesResp{
 		Total: 1,
-		Articles: []*testproto.Article{
+		Articles: []*v1.Article{
 			{
 				Title:    "test article: " + req.Title,
 				Content:  "test",
@@ -36,6 +36,6 @@ func (s service) GetArticles(ctx context.Context, req *testproto.GetArticlesReq)
 
 func main() {
 	e := gin.Default()
-	testproto.RegisterBlogServiceHTTPServer(e, &service{})
+	v1.RegisterBlogServiceHTTPServer(e, &service{})
 	e.Run()
 }

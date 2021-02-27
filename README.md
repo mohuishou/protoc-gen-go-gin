@@ -44,26 +44,26 @@ service BlogService {
 ```protobuf
 // blog service is a blog demo
 service BlogService {
-	rpc GetArticles(GetArticlesReq) returns (GetArticlesResp) {
+  rpc GetArticles(GetArticlesReq) returns (GetArticlesResp) {
     // 
     // 可以通过添加 additional_bindings 使一个 rpc 方法对应多个路由
-		option (google.api.http) = {
-			get: "/v1/articles"
-			additional_bindings {
-				get: "/v1/author/{author_id}/articles"
-			}
-		};
-	}
+    option (google.api.http) = {
+      get: "/v1/articles"
+      additional_bindings {
+        get: "/v1/author/{author_id}/articles"
+      }
+    };
+  }
 }
 ```
 
 ### 文件生成
 
 ```bash
-	protoc -I ./example/api \
-	--go_out ./example/api --go_opt=paths=source_relative \
-	--go-gin_out ./example/api --go-gin_opt=paths=source_relative \
-	example/api/product/app/v1/v1.proto
+  protoc -I ./example/api \
+  --go_out ./example/api --go_opt=paths=source_relative \
+  --go-gin_out ./example/api --go-gin_opt=paths=source_relative \
+  example/api/product/app/v1/v1.proto
 ```
 
 ## 相关介绍

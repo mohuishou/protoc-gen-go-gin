@@ -14,7 +14,7 @@
 注意由于使用 embed 特性，Go 版本必须大于 1.16
 
 ```bash
-go install github.com/mohuishou/protoc-gen-go-gin
+go install github.com/mohuishou/protoc-gen-go-gin@latest
 ```
 
 ## 使用说明

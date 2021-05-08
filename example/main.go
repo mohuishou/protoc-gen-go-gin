@@ -2,10 +2,11 @@ package main
 
 import (
 	"context"
+	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/mohuishou/protoc-gen-go-gin/example/api/product/app/ecode"
 	v1 "github.com/mohuishou/protoc-gen-go-gin/example/api/product/app/v1"
-	"github.com/pkg/errors"
 )
 
 type service struct {
@@ -13,14 +14,14 @@ type service struct {
 
 func (s service) CreateArticle(ctx context.Context, article *v1.Article) (*v1.Article, error) {
 	if article.AuthorId < 1 {
-		return nil, errors.Errorf("author id must > 0")
+		return nil, ecode.Errorf(http.StatusBadRequest, 400, "author id must > 0")
 	}
 	return article, nil
 }
 
 func (s service) GetArticles(ctx context.Context, req *v1.GetArticlesReq) (*v1.GetArticlesResp, error) {
 	if req.AuthorId < 0 {
-		return nil, errors.Errorf("author id must >= 0")
+		return nil, ecode.Errorf(http.StatusBadRequest, 400, "author id must >= 0")
 	}
 	return &v1.GetArticlesResp{
 		Total: 1,

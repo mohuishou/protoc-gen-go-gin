@@ -1,7 +1,10 @@
 package main
 
 import (
+	"fmt"
+	"google.golang.org/protobuf/reflect/protoreflect"
 	"net/http"
+	"os"
 	"regexp"
 	"strings"
 
@@ -35,7 +38,7 @@ func generateFile(gen *protogen.Plugin, file *protogen.File) *protogen.Generated
 	g.P("// This is a compile-time assertion to ensure that this generated file")
 	g.P("// is compatible with the mohuishou/protoc-gen-go-gin package it is being compiled against.")
 	g.P("// ", contextPkg.Ident(""), metadataPkg.Ident(""))
-	g.P("//", ginPkg.Ident(""), errPkg.Ident(""))
+	g.P("// ", ginPkg.Ident(""), errPkg.Ident(""))
 	g.P()
 
 	for _, service := range file.Services {
@@ -57,33 +60,33 @@ func genService(gen *protogen.Plugin, file *protogen.File, g *protogen.Generated
 	}
 
 	for _, method := range s.Methods {
-		sd.Methods = append(sd.Methods, genMethod(method)...)
+		sd.Methods = append(sd.Methods, genMethod(method,g)...)
 	}
 	g.P(sd.execute())
 }
 
-func genMethod(m *protogen.Method) []*method {
+func genMethod(m *protogen.Method, g *protogen.GeneratedFile) []*method {
 	var methods []*method
 
 	// 存在 http rule 配置
 	rule, ok := proto.GetExtension(m.Desc.Options(), annotations.E_Http).(*annotations.HttpRule)
 	if rule != nil && ok {
 		for _, bind := range rule.AdditionalBindings {
-			methods = append(methods, buildHTTPRule(m, bind))
+			methods = append(methods, buildHTTPRule(m, bind,g))
 		}
-		methods = append(methods, buildHTTPRule(m, rule))
+		methods = append(methods, buildHTTPRule(m, rule,g))
 		return methods
 	}
 
 	// 不存在走默认流程
-	methods = append(methods, defaultMethod(m))
+	methods = append(methods, defaultMethod(m,g))
 	return methods
 }
 
 // defaultMethodPath 根据函数名生成 http 路由
 // 例如: GetBlogArticles ==> get: /blog/articles
 // 如果方法名首个单词不是 http method 映射，那么默认返回 POST
-func defaultMethod(m *protogen.Method) *method {
+func defaultMethod(m *protogen.Method, g *protogen.GeneratedFile) *method {
 	names := strings.Split(toSnakeCase(m.GoName), "_")
 	var (
 		paths      []string
@@ -115,12 +118,12 @@ func defaultMethod(m *protogen.Method) *method {
 		path = strings.Join(names[1:], "/")
 	}
 
-	md := buildMethodDesc(m, httpMethod, path)
+	md := buildMethodDesc(m, httpMethod, path,g)
 	md.Body = "*"
 	return md
 }
 
-func buildHTTPRule(m *protogen.Method, rule *annotations.HttpRule) *method {
+func buildHTTPRule(m *protogen.Method, rule *annotations.HttpRule, g *protogen.GeneratedFile) *method {
 	var (
 		path   string
 		method string
@@ -145,24 +148,83 @@ func buildHTTPRule(m *protogen.Method, rule *annotations.HttpRule) *method {
 		path = pattern.Custom.Path
 		method = pattern.Custom.Kind
 	}
-	md := buildMethodDesc(m, method, path)
+	md := buildMethodDesc(m, method, path,g)
 	return md
 }
 
-func buildMethodDesc(m *protogen.Method, httpMethod, path string) *method {
+func buildMethodDesc(m *protogen.Method, httpMethod, path string, g *protogen.GeneratedFile) *method {
 	defer func() { methodSets[m.GoName]++ }()
+
+	vars := buildPathVars(path)
+	fields := m.Input.Desc.Fields()
+
+	for v, s := range vars {
+		if s != nil {
+			path = replacePath(v, *s, path)
+		}
+		for _, field := range strings.Split(v, ".") {
+			if strings.TrimSpace(field) == "" {
+				continue
+			}
+			if strings.Contains(field, ":") {
+				field = strings.Split(field, ":")[0]
+			}
+			fd := fields.ByName(protoreflect.Name(field))
+			if fd == nil {
+				fmt.Fprintf(os.Stderr, "\u001B[31mERROR\u001B[m: The corresponding field '%s' declaration in message could not be found in '%s'\n", v, path)
+				os.Exit(2)
+			}
+			if fd.IsMap() {
+				fmt.Fprintf(os.Stderr, "\u001B[31mWARN\u001B[m: The field in path:'%s' shouldn't be a map.\n", v)
+			} else if fd.IsList() {
+				fmt.Fprintf(os.Stderr, "\u001B[31mWARN\u001B[m: The field in path:'%s' shouldn't be a list.\n", v)
+			} else if fd.Kind() == protoreflect.MessageKind || fd.Kind() == protoreflect.GroupKind {
+				fields = fd.Message().Fields()
+			}
+		}
+	}
+
 	md := &method{
 		Name:    m.GoName,
 		Num:     methodSets[m.GoName],
-		Request: m.Input.GoIdent.GoName,
-		Reply:   m.Output.GoIdent.GoName,
+		Request: g.QualifiedGoIdent(m.Input.GoIdent),
+		Reply:   g.QualifiedGoIdent(m.Output.GoIdent),
 		Path:    path,
 		Method:  httpMethod,
 	}
 	md.initPathParams()
 	return md
 }
-
+func buildPathVars(path string) (res map[string]*string) {
+	if strings.HasSuffix(path, "/") {
+		fmt.Fprintf(os.Stderr, "\u001B[31mWARN\u001B[m: Path %s should not end with \"/\" \n", path)
+	}
+	res = make(map[string]*string)
+	pattern := regexp.MustCompile(`(?i){([a-z\.0-9_\s]*)=?([^{}]*)}`)
+	matches := pattern.FindAllStringSubmatch(path, -1)
+	for _, m := range matches {
+		name := strings.TrimSpace(m[1])
+		if len(name) > 1 && len(m[2]) > 0 {
+			res[name] = &m[2]
+		} else {
+			res[name] = nil
+		}
+	}
+	return
+}
+func replacePath(name string, value string, path string) string {
+	pattern := regexp.MustCompile(fmt.Sprintf(`(?i){([\s]*%s[\s]*)=?([^{}]*)}`, name))
+	idx := pattern.FindStringIndex(path)
+	if len(idx) > 0 {
+		path = fmt.Sprintf("%s{%s:%s}%s",
+			path[:idx[0]], // The start of the match
+			name,
+			strings.ReplaceAll(value, "*", ".*"),
+			path[idx[1]:],
+		)
+	}
+	return path
+}
 var matchFirstCap = regexp.MustCompile("([A-Z])([A-Z][a-z])")
 var matchAllCap = regexp.MustCompile("([a-z0-9])([A-Z])")
 
